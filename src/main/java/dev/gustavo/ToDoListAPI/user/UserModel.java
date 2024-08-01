@@ -28,7 +28,7 @@ public class UserModel {
     private String lastName;
     @Column(nullable = false)
     private String nickname;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Blob profilePicture;
     @Column(unique = true, nullable = false)
     private String email;
