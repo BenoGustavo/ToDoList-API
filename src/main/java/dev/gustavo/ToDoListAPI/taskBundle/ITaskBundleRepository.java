@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ItaskBundleRepository extends JpaRepository<TaskBundleModel, UUID> {
+public interface ITaskBundleRepository extends JpaRepository<TaskBundleModel, UUID> {
 
     TaskBundleModel findByTitle(String title);
 }

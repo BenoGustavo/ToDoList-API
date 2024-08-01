@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/task-bundles")
 public class TaskBundleController {
     @Autowired
-    private ItaskBundleRepository taskBundleRepository;
+    private ITaskBundleRepository taskBundleRepository;
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAll() {
