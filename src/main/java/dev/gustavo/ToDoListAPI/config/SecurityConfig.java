@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import dev.gustavo.ToDoListAPI.filter.JwtRequestFilter;
+import dev.gustavo.ToDoListAPI.auth.JwtRequestFilter;
 import dev.gustavo.ToDoListAPI.user.service.CustomUserDetailsService;
 
 @Configuration
