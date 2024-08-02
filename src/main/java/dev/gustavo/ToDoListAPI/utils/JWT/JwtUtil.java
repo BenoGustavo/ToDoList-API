@@ -1,4 +1,4 @@
-package dev.gustavo.ToDoListAPI.utils;
+package dev.gustavo.ToDoListAPI.utils.JWT;
 
 import java.util.Base64;
 import java.util.Date;
