@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import dev.gustavo.ToDoListAPI.auth.JwtRequestFilter;
-import dev.gustavo.ToDoListAPI.user.service.CustomUserDetailsService;
+import dev.gustavo.ToDoListAPI.service.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +38,8 @@ public class SecurityConfig {
                 http
                                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                                                 .requestMatchers(ALLOWED_ROUTES_WITHOUT_AUTH).permitAll()
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/common/**").hasRole("COMMON")
                                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(sessionManagement -> sessionManagement

@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import dev.gustavo.ToDoListAPI.user.service.CustomUserDetailsService;
-import dev.gustavo.ToDoListAPI.utils.JwtUtil;
+import dev.gustavo.ToDoListAPI.service.CustomUserDetailsService;
+import dev.gustavo.ToDoListAPI.utils.JWT.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

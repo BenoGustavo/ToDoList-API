@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.gustavo.ToDoListAPI.user.service.CustomUserDetailsService;
-import dev.gustavo.ToDoListAPI.utils.JwtUtil;
+import dev.gustavo.ToDoListAPI.service.CustomUserDetailsService;
+import dev.gustavo.ToDoListAPI.utils.JWT.JwtUtil;
+import dev.gustavo.ToDoListAPI.utils.requests.AuthRequest;
+import dev.gustavo.ToDoListAPI.utils.responses.AuthResponse;
 
 @RestController
 @RequestMapping("/auth")
