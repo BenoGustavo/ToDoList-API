@@ -18,4 +18,5 @@ public class TaskDTO {
     private LocalDateTime deletedAt;
     private LocalDateTime doneAt;
     private UUID taskBundleId;
+    private UUID owner;
 }
