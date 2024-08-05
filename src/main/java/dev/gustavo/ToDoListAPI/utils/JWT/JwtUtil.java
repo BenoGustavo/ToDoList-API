@@ -6,9 +6,11 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import dev.gustavo.ToDoListAPI.models.UserModel;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,6 +22,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtUtil {
 
     private final byte[] secretKey;
+
+    public String getCurrentUserJwtToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserModel) {
+            // UserModel user = (UserModel) authentication.getPrincipal();
+            return (String) authentication.getCredentials();
+        }
+        return null;
+    }
 
     /**
      * Constructor that initializes the secret key from the environment properties.
