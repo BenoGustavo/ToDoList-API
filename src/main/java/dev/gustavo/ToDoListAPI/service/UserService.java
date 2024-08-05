@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Service;
 
 import dev.gustavo.ToDoListAPI.models.UserModel;
 import dev.gustavo.ToDoListAPI.repositories.interfaces.IUserRepository;
@@ -17,6 +18,7 @@ import dev.gustavo.ToDoListAPI.utils.error.custom.NotFound404Exception;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.UserDTO;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.converter.UserDtoConverter;
 
+@Service
 public class UserService implements IUserService {
 
     @Autowired
@@ -53,10 +55,6 @@ public class UserService implements IUserService {
     public UserDTO create(UserModel user) {
         // Validate user model
         isUserModelValid(user);
-
-        if (!EmailValidator.isValid(user.getEmail())) {
-            throw new BadRequest400Exception("Invalid email");
-        }
 
         // Hash password
         String hashedPassword = BCrypt.hashpw(user.getHashedPassword(), BCrypt.gensalt());
@@ -152,7 +150,7 @@ public class UserService implements IUserService {
     }
 
     private boolean isPasswordValid(String newPassword) {
-        return newPassword == null || newPassword.isEmpty() || newPassword.length() < 5;
+        return (newPassword != null) && (!newPassword.isEmpty()) && (newPassword.length() >= 5);
     }
 
     // This method wiil check if the user model is in pair with the business rules
@@ -178,7 +176,7 @@ public class UserService implements IUserService {
             throw new BadRequest400Exception("Invalid email length");
         }
 
-        if (user.getAge() < 0 || user.getAge() > 120) {
+        if (user.getAge() < 10 || user.getAge() > 120) {
             throw new BadRequest400Exception("Invalid age");
         }
 
@@ -208,11 +206,12 @@ public class UserService implements IUserService {
             throw new BadRequest400Exception("Invalid email length");
         }
 
-        if (user.getAge() < 0 || user.getAge() > 120) {
+        if (user.getAge() < 10 || user.getAge() > 120) {
             throw new BadRequest400Exception("Invalid age");
         }
 
         if (!isPasswordValid(user.getHashedPassword())) {
+            System.out.println(user.getHashedPassword());
             throw new BadRequest400Exception("Invalid password");
         }
 
