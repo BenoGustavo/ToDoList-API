@@ -1,4 +1,4 @@
-package dev.gustavo.ToDoListAPI.utils;
+package dev.gustavo.ToDoListAPI.utils.Enums;
 
 public enum RoleName {
     ROLE_ADMIN,
