@@ -1,9 +1,11 @@
 package dev.gustavo.ToDoListAPI.controllers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +39,16 @@ public class UserController {
         responseBuilder.data(createdUser);
         responseBuilder.status(201);
         responseBuilder.result("User created successfully");
+
+        return ResponseEntity.ok(responseBuilder.build());
+    }
+
+    @GetMapping("/admin/all")
+    public ResponseEntity<Response<List<UserDTO>>> getAll() {
+        ResponseBuilder<List<UserDTO>> responseBuilder = new ResponseBuilder<>();
+
+        responseBuilder.data(userService.getAllUsers()).status(200)
+                .result("Users retrieved from database successfully");
 
         return ResponseEntity.ok(responseBuilder.build());
     }
