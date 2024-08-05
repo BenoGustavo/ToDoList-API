@@ -1,8 +1,12 @@
 package dev.gustavo.ToDoListAPI.service.interfaces;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.UUID;
 
+import dev.gustavo.ToDoListAPI.models.UserModel;
+import dev.gustavo.ToDoListAPI.utils.error.custom.BadRequest400Exception;
+import dev.gustavo.ToDoListAPI.utils.error.custom.NotFound404Exception;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.UserDTO;
 
 /**
@@ -37,13 +41,21 @@ public interface IUserService {
     List<UserDTO> getAllUsers();
 
     /**
+     * Retrieves a user by their email.
+     *
+     * @param email the email of the user
+     * @return the user data transfer object
+     */
+    UserDTO getUserByEmail(String email);
+
+    /**
      * Creates a new user.
      *
      * @param user the user data transfer object (DTO)
      * 
      * @return the created user data transfer object
      */
-    UserDTO create(UserDTO user);
+    UserDTO create(UserModel user);
 
     /**
      * Updates an existing user.
@@ -51,7 +63,7 @@ public interface IUserService {
      * @param user the user data transfer object
      * @return the updated user data transfer object
      */
-    UserDTO update(UserDTO user);
+    UserDTO update(UUID id, UserDTO user);
 
     /**
      * Deletes a user by their unique identifier.
@@ -60,4 +72,22 @@ public interface IUserService {
      * @return the deleted user data transfer object
      */
     UserDTO delete(UUID id);
+
+    /**
+     * Updates the user profile picture.
+     *
+     * @param newPicture the picture in a blob format
+     * @param id         the unique identifier of the user
+     * @return the updated user data transfer object
+     */
+    UserDTO updateProfilePicture(UUID id, Blob newPicture) throws NotFound404Exception, BadRequest400Exception;
+
+    /**
+     * Updates the user profile picture.
+     *
+     * @param newPassword The new password
+     * @param id          the unique identifier of the user
+     * @return the updated user data transfer object
+     */
+    UserDTO updatePassword(UUID id, String newPassword) throws NotFound404Exception;
 }
