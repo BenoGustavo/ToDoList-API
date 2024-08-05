@@ -1,13 +1,17 @@
 package dev.gustavo.ToDoListAPI.utils.requests.dto.converter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import dev.gustavo.ToDoListAPI.models.UserModel;
 import dev.gustavo.ToDoListAPI.utils.error.custom.DtoConvertionHandler;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.UserDTO;
 
+@Component
 public class UserDtoConverter {
     // Convert UserModel to UserDTO
     public UserDTO convertToDTO(UserModel user) {
@@ -25,6 +29,15 @@ public class UserDtoConverter {
         dto.setDeletedAt(user.getDeletedAt());
         dto.setLastLogin(user.getLastLogin());
         return dto;
+    }
+
+    public List<UserDTO> convertToDTOList(List<UserModel> users) {
+        List<UserDTO> dtos = new ArrayList<>();
+
+        for (UserModel user : users) {
+            dtos.add(convertToDTO(user));
+        }
+        return dtos;
     }
 
     // Convert UserDTO to UserModel
