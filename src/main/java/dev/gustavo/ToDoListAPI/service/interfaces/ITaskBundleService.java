@@ -31,10 +31,19 @@ public interface ITaskBundleService {
     /**
      * Retrieves a task bundle by its unique identifier.
      *
-     * @param id the unique identifier of the task bundle
+     * @param id    the unique identifier of the user
+     * @param title the title of the task bundle
      * @return the task bundle data transfer object
      */
-    TaskBundleDTO getTaskBundleById(UUID id);
+    public List<TaskBundleDTO> getTaskBundleByTitleAndUserId(UUID userId, String title);
+
+    /**
+     * Retrieves a task bundle by its unique identifier.
+     *
+     * @param title the title of the task bundle
+     * @return the task bundle data transfer object
+     */
+    public List<TaskBundleDTO> getTaskBundleByTitle(String title);
 
     /**
      * Retrieves all task bundles.
@@ -49,7 +58,7 @@ public interface ITaskBundleService {
      * @param userId the unique identifier of the user
      * @return a list of task bundle data transfer objects
      */
-    List<TaskBundleDTO> getAllTaskBundlesByUserId(UUID userId);
+    List<TaskBundleDTO> getTaskBundlesByUserId(UUID userId);
 
     /**
      * Creates a new task bundle.
