@@ -35,6 +35,7 @@ public class TaskModel {
     private LocalDateTime updatedAt;
 
     @Value("${null}")
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
     @Value("${null}")
     private LocalDateTime doneAt;
@@ -45,5 +46,5 @@ public class TaskModel {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UUID owner;
+    private UserModel owner;
 }

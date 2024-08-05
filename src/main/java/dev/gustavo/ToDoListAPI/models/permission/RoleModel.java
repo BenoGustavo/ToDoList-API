@@ -1,6 +1,6 @@
 package dev.gustavo.ToDoListAPI.models.permission;
 
-import dev.gustavo.ToDoListAPI.utils.RoleName;
+import dev.gustavo.ToDoListAPI.utils.Enums.RoleName;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

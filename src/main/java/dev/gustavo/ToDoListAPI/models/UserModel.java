@@ -54,6 +54,7 @@ public class UserModel {
     private LocalDateTime updatedAt;
 
     @Value("${null}")
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
     @Value("${null}")
     private LocalDateTime lastLogin;
