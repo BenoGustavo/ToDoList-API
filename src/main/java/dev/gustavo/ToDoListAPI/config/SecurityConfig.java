@@ -24,7 +24,7 @@ import dev.gustavo.ToDoListAPI.service.CustomUserDetailsService;
 public class SecurityConfig {
 
         final static String[] ALLOWED_ROUTES_WITHOUT_AUTH = {
-                        "/auth/**", "/users/"
+                        "/auth/**", "/users/", "/"
         };
 
         @Autowired
