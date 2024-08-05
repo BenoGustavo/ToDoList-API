@@ -62,7 +62,7 @@ public interface ITaskService {
      * 
      * @return the created task data transfer object
      */
-    TaskDTO create(TaskDTO task);
+    TaskDTO create(TaskDTO task, UUID taskBundleId);
 
     /**
      * Updates an existing task.
