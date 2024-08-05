@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import dev.gustavo.ToDoListAPI.utils.error.custom.BadRequest400Exception;
+import dev.gustavo.ToDoListAPI.utils.error.custom.DtoConvertionHandler;
+import dev.gustavo.ToDoListAPI.utils.error.custom.Unauthorized401Exception;
+import dev.gustavo.ToDoListAPI.utils.responses.builder.ResponseBuilder;
+import dev.gustavo.ToDoListAPI.utils.responses.generic.Response;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -35,5 +41,30 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleDatatypeConverter(ClassNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ex);
+    }
+
+    @ExceptionHandler(DtoConvertionHandler.class)
+    public ResponseEntity<Response<DtoConvertionHandler>> handleDtoConvertion(DtoConvertionHandler ex) {
+        Response<DtoConvertionHandler> responseBody = new ResponseBuilder<DtoConvertionHandler>()
+                .error(ex.getCode(), ex.getMessage())
+                .status(ex.getCode()).result("Invalid payload, check the docs!").build();
+
+        return ResponseEntity.status(ex.getCode()).body(responseBody);
+    }
+
+    @ExceptionHandler(BadRequest400Exception.class)
+    public ResponseEntity<Response<BadRequest400Exception>> handleBadRequestException(BadRequest400Exception ex) {
+        Response<BadRequest400Exception> responseBody = new ResponseBuilder<BadRequest400Exception>()
+                .result("Bad Request!").error(ex.getCode(), ex.getMessage()).status(ex.getCode()).build();
+
+        return ResponseEntity.status(ex.getCode()).body(responseBody);
+    }
+
+    @ExceptionHandler(Unauthorized401Exception.class)
+    public ResponseEntity<Response<Unauthorized401Exception>> handleUnauthorizedRequests(Unauthorized401Exception ex) {
+        Response<Unauthorized401Exception> responseBody = new ResponseBuilder<Unauthorized401Exception>()
+                .result("Unauthorized").error(ex.getCode(), ex.getMessage()).status(ex.getCode()).build();
+
+        return ResponseEntity.status(ex.getCode()).body(responseBody);
     }
 }
