@@ -32,7 +32,7 @@ public class PaginationResponseBuilder<T> {
         return this;
     }
 
-    public PaginationResponseBuilder<T> status(String status) {
+    public PaginationResponseBuilder<T> status(int status) {
         response.setStatus(status);
         return this;
     }
@@ -42,7 +42,7 @@ public class PaginationResponseBuilder<T> {
         return this;
     }
 
-    public PaginationResponseBuilder<T> error(String code, String message) {
+    public PaginationResponseBuilder<T> error(int code, String message) {
         response.setError(new dev.gustavo.ToDoListAPI.utils.responses.generic.ResponseError(code, message));
         return this;
     }
