@@ -42,6 +42,10 @@ public class UserDtoConverter {
 
     // Convert UserDTO to UserModel
     public UserModel convertToEntity(UserDTO dto) {
+        if (dto.getId() == null || dto.getId().isEmpty()) {
+            dto.setId(UUID.randomUUID().toString());
+        }
+
         validateUserDTO(dto);
         UserModel user = new UserModel();
         user.setFirstName(dto.getFirstName());
@@ -50,6 +54,7 @@ public class UserDtoConverter {
         user.setProfilePicture(dto.getProfilePicture());
         user.setEmail(dto.getEmail());
         user.setAge(dto.getAge());
+        user.setHashedPassword(dto.getPassword());
 
         user.setId(UUID.fromString(dto.getId()));
         return user;
