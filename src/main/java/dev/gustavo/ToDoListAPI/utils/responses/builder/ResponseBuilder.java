@@ -6,7 +6,7 @@ import dev.gustavo.ToDoListAPI.utils.responses.generic.ResponseError;
 public class ResponseBuilder<T> {
     private final Response<T> response = new Response<>();
 
-    public ResponseBuilder<T> status(String status) {
+    public ResponseBuilder<T> status(int status) {
         response.setStatus(status);
         return this;
     }
@@ -16,12 +16,12 @@ public class ResponseBuilder<T> {
         return this;
     }
 
-    public ResponseBuilder<T> error(String code, String message) {
+    public ResponseBuilder<T> error(int code, String message) {
         response.setError(new ResponseError(code, message));
         return this;
     }
 
-    public ResponseBuilder<T> error(String code, String message, String description) {
+    public ResponseBuilder<T> error(int code, String message, String description) {
         response.setError(new ResponseError(code, message, description));
         return this;
     }
