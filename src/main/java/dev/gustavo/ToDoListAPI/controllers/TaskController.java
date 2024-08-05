@@ -1,101 +1,107 @@
 package dev.gustavo.ToDoListAPI.controllers;
 
-import java.util.Optional;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import dev.gustavo.ToDoListAPI.models.TaskBundleModel;
-import dev.gustavo.ToDoListAPI.models.TaskModel;
-import dev.gustavo.ToDoListAPI.repositories.ITaskBundleRepository;
-import dev.gustavo.ToDoListAPI.repositories.ITaskRepository;
-import dev.gustavo.ToDoListAPI.utils.JWT.JwtUtil;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
-    @Autowired
-    private ITaskRepository TaskRepository;
+    // @Autowired
+    // private ITaskRepository TaskRepository;
 
-    @Autowired
-    private ITaskBundleRepository TaskBundleRepository;
+    // @Autowired
+    // private ITaskBundleRepository TaskBundleRepository;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    // @Autowired
+    // private IUserRepository UserRepository;
 
-    @GetMapping("/all")
-    public ResponseEntity<Object> getAll() {
-        // Perform ownership check if needed
-        return ResponseEntity.ok(this.TaskRepository.findAll());
-    }
+    // @Autowired
+    // private JwtUtil jwtUtil;
 
-    @GetMapping("/by-task-bundle-id/{taskBundleId}")
-    public ResponseEntity<Object> getByTaskBundleId(@PathVariable UUID taskBundleId,
-            @RequestHeader("Authorization") String headerValue) {
+    // @GetMapping("/all")
+    // public ResponseEntity<Object> getAll() {
+    // // Perform ownership check if needed
+    // return ResponseEntity.ok(this.TaskRepository.findAll());
+    // }
 
-        Optional<TaskBundleModel> taskBundle = this.TaskBundleRepository.findById(taskBundleId);
+    // @GetMapping("/by-task-bundle-id/{taskBundleId}")
+    // public ResponseEntity<Object> getByTaskBundleId(@PathVariable UUID
+    // taskBundleId,
+    // @RequestHeader("Authorization") String headerValue) {
 
-        if (!taskBundle.isPresent()) {
-            return ResponseEntity.status(404).body("Task bundle not found");
-        }
+    // Optional<TaskBundleModel> taskBundle =
+    // this.TaskBundleRepository.findById(taskBundleId);
 
-        if (this.isUserOwner(taskBundle.get(), headerValue)) {
-            return ResponseEntity.status(403).body("Forbidden, you are not the owner of this task bundle");
-        }
+    // if (!taskBundle.isPresent()) {
+    // return ResponseEntity.status(404).body("Task bundle not found");
+    // }
 
-        return ResponseEntity.ok(this.TaskRepository.findByTaskBundleId(taskBundleId));
-    }
+    // if (this.isUserOwner(taskBundle.get(), headerValue)) {
+    // return ResponseEntity.status(403).body("Forbidden, you are not the owner of
+    // this task bundle");
+    // }
 
-    @GetMapping("/by-task-id/{taskId}")
-    public ResponseEntity<Object> getById(@PathVariable UUID taskId,
-            @RequestHeader("Authorization") String headerValue) {
+    // return
+    // ResponseEntity.ok(this.TaskRepository.findByTaskBundleId(taskBundleId));
+    // }
 
-        Optional<TaskModel> task = this.TaskRepository.findById(taskId);
+    // @GetMapping("/by-task-id/{taskId}")
+    // public ResponseEntity<Object> getById(@PathVariable UUID taskId,
+    // @RequestHeader("Authorization") String headerValue) {
 
-        if (!task.isPresent()) {
-            return ResponseEntity.status(404).body("Task not found");
-        }
+    // Optional<TaskModel> task = this.TaskRepository.findById(taskId);
 
-        if (!isUserOwner(task.get(), headerValue)) {
-            return ResponseEntity.status(403).body("Forbidden, you are not the owner of this task");
-        }
+    // if (!task.isPresent()) {
+    // return ResponseEntity.status(404).body("Task not found");
+    // }
 
-        return ResponseEntity.ok(this.TaskRepository.findById(taskId));
-    }
+    // if (!isUserOwner(task.get(), headerValue)) {
+    // return ResponseEntity.status(403).body("Forbidden, you are not the owner of
+    // this task");
+    // }
 
-    @PostMapping("/")
-    public TaskModel create(TaskModel taskModel) {
-        return this.TaskRepository.save(taskModel);
-    }
+    // return ResponseEntity.ok(this.TaskRepository.findById(taskId));
+    // }
 
-    private boolean isUserOwner(TaskModel task, String headerValue) {
-        headerValue = headerValue.replace("Bearer ", "");
-        String requestEmail = jwtUtil.extractUsername(headerValue);
+    // @PostMapping("/")
+    // public TaskModel create(TaskModel taskModel) {
+    // return this.TaskRepository.save(taskModel);
+    // }
 
-        TaskBundleModel taskBundle = task.getTaskBundle();
+    // private boolean isUserOwner(TaskModel task, String headerValue) {
+    // headerValue = headerValue.replace("Bearer ", "");
+    // String requestEmail = jwtUtil.extractUsername(headerValue);
 
-        if (taskBundle == null) {
-            return false;
-        }
+    // UUID taskBundleId = task.getTaskBundleId();
 
-        String ownerEmail = taskBundle.getUser().getEmail();
+    // TaskBundleModel taskBundle = TaskBundleRepository.findById(taskBundleId)
+    // .orElseThrow(() -> new NotFound404Exception("task bundle not found"));
 
-        return ownerEmail.equals(requestEmail);
-    }
+    // if (taskBundle == null) {
+    // return false;
+    // }
 
-    private boolean isUserOwner(TaskBundleModel taskBundle, String headerValue) {
-        headerValue = headerValue.replace("Bearer ", "");
-        String requestEmail = jwtUtil.extractUsername(headerValue);
+    // UUID taskBundleOwnerId = taskBundle.getUserId();
 
-        String ownerEmail = taskBundle.getUser().getEmail();
+    // UserModel taskBundleOwnerModel = UserRepository.findById(taskBundleOwnerId)
+    // .orElseThrow(() -> new NotFound404Exception("user not found"));
 
-        return ownerEmail.equals(requestEmail);
-    }
+    // String ownerEmail = taskBundleOwnerModel.getEmail();
+
+    // return ownerEmail.equals(requestEmail);
+    // }
+
+    // private boolean isUserOwner(TaskBundleModel taskBundle, String headerValue) {
+    // headerValue = headerValue.replace("Bearer ", "");
+    // String requestEmail = jwtUtil.extractUsername(headerValue);
+
+    // UUID taskBundleOwnerId = taskBundle.getUserId();
+
+    // UserModel taskBundleOwnerModel = UserRepository.findById(taskBundleOwnerId)
+    // .orElseThrow(() -> new NotFound404Exception("user not found"));
+
+    // String ownerEmail = taskBundleOwnerModel.getEmail();
+
+    // return ownerEmail.equals(requestEmail);
+    // }
 }
