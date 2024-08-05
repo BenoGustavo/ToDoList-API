@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import dev.gustavo.ToDoListAPI.models.UserModel;
-import dev.gustavo.ToDoListAPI.repositories.IUserRepository;
+import dev.gustavo.ToDoListAPI.repositories.interfaces.IUserRepository;
 
 /*
 This service is responsible for loading user-specific data during the authentication process. Here's a breakdown of what this service does:
