@@ -37,6 +37,7 @@ public class TaskBundleModel {
     private LocalDateTime updatedAt;
 
     @Value("${null}")
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @ManyToOne
