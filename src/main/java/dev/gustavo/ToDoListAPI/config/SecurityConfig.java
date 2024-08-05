@@ -26,6 +26,12 @@ public class SecurityConfig {
         final static String[] ALLOWED_ROUTES_WITHOUT_AUTH = {
                         "/auth/**", "/users/", "/"
         };
+        final static String[] ONLY_ADMIN_ALLOWED_ROUTES = {
+                        "/users/admin/**",
+        };
+        final static String[] ONLY_COMMON_ALLOWED_ROUTES = {
+                        "/common/**",
+        };
 
         @Autowired
         private CustomUserDetailsService customUserDetailsService;
@@ -38,8 +44,8 @@ public class SecurityConfig {
                 http
                                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                                                 .requestMatchers(ALLOWED_ROUTES_WITHOUT_AUTH).permitAll()
-                                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                                .requestMatchers("/common/**").hasRole("COMMON")
+                                                .requestMatchers(ONLY_ADMIN_ALLOWED_ROUTES).hasRole("ADMIN")
+                                                .requestMatchers(ONLY_COMMON_ALLOWED_ROUTES).hasRole("COMMON")
                                                 .anyRequest().authenticated())
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(sessionManagement -> sessionManagement
