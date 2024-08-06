@@ -13,10 +13,13 @@ import dev.gustavo.ToDoListAPI.models.UserModel;
 import dev.gustavo.ToDoListAPI.repositories.interfaces.IUserRepository;
 import dev.gustavo.ToDoListAPI.service.interfaces.IUserService;
 import dev.gustavo.ToDoListAPI.utils.EmailValidator;
+import dev.gustavo.ToDoListAPI.utils.JWT.JwtUtil;
 import dev.gustavo.ToDoListAPI.utils.error.custom.BadRequest400Exception;
 import dev.gustavo.ToDoListAPI.utils.error.custom.NotFound404Exception;
+import dev.gustavo.ToDoListAPI.utils.error.custom.Unauthorized401Exception;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.UserDTO;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.converter.UserDtoConverter;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class UserService implements IUserService {
@@ -27,17 +30,33 @@ public class UserService implements IUserService {
     @Autowired
     IUserRepository userRepository;
 
+    @Autowired
+    JwtUtil jwtUtil;
+
     // Literally get the user by id
     @Override
-    public UserDTO getUserById(UUID id) {
-        UserDTO userDto = userDtoConverter.convertToDTO(userRepository.findById(id).get());
+    public UserDTO getUserById(UUID id, HttpServletRequest request) {
+        isUserAuthorized(request);
+
+        UserDTO userDto = userDtoConverter.convertToDTO(
+                userRepository.findById(id).orElseThrow(() -> new NotFound404Exception("User not found")));
 
         return userDto;
     }
 
     // Literally get the user by email
     @Override
-    public UserDTO getUserByEmail(String email) {
+    public UserDTO getUserByEmail(String email, HttpServletRequest request) {
+        isUserAuthorized(request);
+
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        String userEmail = jwtUtil.extractEmail(token);
+
+        if (!userEmail.equals(email)) {
+            throw new BadRequest400Exception("Don't have permission to access this user");
+        }
+
         UserModel user = userRepository.findByEmail(email);
         UserDTO userDto = userDtoConverter.convertToDTO(user);
 
@@ -70,9 +89,22 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserDTO delete(UUID id) {
-        userRepository.updateDeletedAt(id);
+    public UserDTO delete(UUID id, HttpServletRequest request) {
+        isUserAuthorized(request);
 
+        UserModel user = userRepository.findById(id).orElseThrow(() -> new NotFound404Exception("User not found"));
+
+        if (user.getDeletedAt() != null) {
+            throw new NotFound404Exception("User already deleted!");
+        }
+
+        UUID userUUID = user.getId();
+
+        if (!userUUID.equals(id)) {
+            throw new Unauthorized401Exception("Only the owner user can delete their account");
+        }
+
+        userRepository.updateDeletedAt(id);
         UserDTO userDto = userDtoConverter.convertToDTO(userRepository.findById(id).get());
 
         return userDto;
@@ -80,6 +112,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserDTO update(UUID id, UserDTO user) throws NotFound404Exception, BadRequest400Exception {
+        // isUserAuthorized(request);
         isUserModelValid(user);
 
         if (!EmailValidator.isValid(user.getEmail())) {
@@ -104,6 +137,8 @@ public class UserService implements IUserService {
     @Override
     public UserDTO updateProfilePicture(UUID id, Blob newPicture) throws NotFound404Exception, BadRequest400Exception {
 
+        // isUserAuthorized(request);
+
         if (newPicture == null) {
             throw new BadRequest400Exception("Invalid picture");
         }
@@ -125,15 +160,23 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserDTO updatePassword(UUID id, String newPassword) throws NotFound404Exception {
+    public UserDTO updatePassword(String email, String newPassword, String oldPassword, HttpServletRequest request)
+            throws NotFound404Exception {
+
+        isUserAuthorized(request);
+
+        String currentPassword = userRepository.findByEmail(email).getHashedPassword();
+
+        if (!BCrypt.checkpw(oldPassword, currentPassword)) {
+            throw new BadRequest400Exception("Passwords don't match");
+        }
 
         if (!isPasswordValid(newPassword)) {
             throw new BadRequest400Exception("Invalid password");
         }
 
         // Get the user from database or throw
-        UserModel userModel = userRepository.findById(id)
-                .orElseThrow(() -> new NotFound404Exception("User not found"));
+        UserModel userModel = userRepository.findByEmail(email);
 
         String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
 
@@ -143,7 +186,7 @@ public class UserService implements IUserService {
         // Save changes on database
         userRepository.save(userModel);
 
-        // Trasnfrom entity in to a DTO
+        // transform entity in to a DTO
         UserDTO updatedUserDto = userDtoConverter.convertToDTO(userModel);
 
         return updatedUserDto;
@@ -257,6 +300,15 @@ public class UserService implements IUserService {
 
     private boolean isFieldUpdated(Object newValue, Object existingValue) {
         return newValue != null && !newValue.equals(existingValue);
+    }
+
+    private void isUserAuthorized(HttpServletRequest request) throws Unauthorized401Exception {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+
+        if (token == null || token.isEmpty()) {
+            throw new Unauthorized401Exception("Authorization token is missing");
+        }
     }
 
 }
