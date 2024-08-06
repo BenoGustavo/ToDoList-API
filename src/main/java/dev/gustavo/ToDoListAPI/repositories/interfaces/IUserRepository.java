@@ -21,4 +21,9 @@ public interface IUserRepository extends JpaRepository<UserModel, UUID> {
     @Transactional
     @Query("UPDATE users u SET u.deletedAt = CURRENT_TIMESTAMP WHERE u.id = :id")
     void updateDeletedAt(@Param("id") UUID id);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE users u SET u.lastLogin = CURRENT_TIMESTAMP WHERE u.email = :email")
+    void updateLastLogin(@Param("email") String email);
 }
