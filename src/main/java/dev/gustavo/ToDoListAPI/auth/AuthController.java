@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import dev.gustavo.ToDoListAPI.repositories.interfaces.IUserRepository;
 import dev.gustavo.ToDoListAPI.utils.JWT.JwtUtil;
 import dev.gustavo.ToDoListAPI.utils.requests.AuthRequest;
 import dev.gustavo.ToDoListAPI.utils.responses.AuthResponse;
@@ -22,10 +23,15 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private IUserRepository userRepository;
+
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest) {
         UserDetails userDetails = authService.auth(authenticationRequest);
         final String jwt = jwtUtil.generateToken(userDetails);
+
+        userRepository.updateLastLogin(authenticationRequest.getEmail());
 
         return ResponseEntity.ok(new AuthResponse(jwt));
     }
