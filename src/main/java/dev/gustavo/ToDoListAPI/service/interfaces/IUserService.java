@@ -8,6 +8,7 @@ import dev.gustavo.ToDoListAPI.models.UserModel;
 import dev.gustavo.ToDoListAPI.utils.error.custom.BadRequest400Exception;
 import dev.gustavo.ToDoListAPI.utils.error.custom.NotFound404Exception;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.UserDTO;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Interface for user service operations.
@@ -31,7 +32,7 @@ public interface IUserService {
      * @param id the unique identifier of the user
      * @return the user data transfer object
      */
-    UserDTO getUserById(UUID id);
+    UserDTO getUserById(UUID id, HttpServletRequest request);
 
     /**
      * Retrieves all users.
@@ -46,7 +47,7 @@ public interface IUserService {
      * @param email the email of the user
      * @return the user data transfer object
      */
-    UserDTO getUserByEmail(String email);
+    UserDTO getUserByEmail(String email, HttpServletRequest request);
 
     /**
      * Creates a new user.
@@ -71,7 +72,7 @@ public interface IUserService {
      * @param id the unique identifier of the user
      * @return the deleted user data transfer object
      */
-    UserDTO delete(UUID id);
+    UserDTO delete(UUID id, HttpServletRequest request);
 
     /**
      * Updates the user profile picture.
@@ -89,5 +90,6 @@ public interface IUserService {
      * @param id          the unique identifier of the user
      * @return the updated user data transfer object
      */
-    UserDTO updatePassword(UUID id, String newPassword) throws NotFound404Exception;
+    UserDTO updatePassword(String email, String newPassword, String oldPassword, HttpServletRequest request)
+            throws NotFound404Exception;
 }
