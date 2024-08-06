@@ -11,7 +11,12 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String nickname;
+
     private String password;
+    private String oldPassword;
+    private String confirmPassword;
+    private String newPassword;
+
     private Blob profilePicture;
     private String email;
     private int age;
