@@ -3,6 +3,7 @@ package dev.gustavo.ToDoListAPI.utils.error;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +11,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import dev.gustavo.ToDoListAPI.utils.error.custom.BadRequest400Exception;
 import dev.gustavo.ToDoListAPI.utils.error.custom.DtoConvertionHandler;
+import dev.gustavo.ToDoListAPI.utils.error.custom.NotFound404Exception;
 import dev.gustavo.ToDoListAPI.utils.error.custom.Unauthorized401Exception;
 import dev.gustavo.ToDoListAPI.utils.responses.builder.ResponseBuilder;
 import dev.gustavo.ToDoListAPI.utils.responses.generic.Response;
@@ -66,5 +68,24 @@ public class GlobalExceptionHandler {
                 .result("Unauthorized").error(ex.getCode(), ex.getMessage()).status(ex.getCode()).build();
 
         return ResponseEntity.status(ex.getCode()).body(responseBody);
+    }
+
+    @ExceptionHandler(NotFound404Exception.class)
+    public ResponseEntity<Response<NotFound404Exception>> handleNotFoundRequests(NotFound404Exception ex) {
+        Response<NotFound404Exception> responseBody = new ResponseBuilder<NotFound404Exception>()
+                .result("Not Found").error(ex.getCode(), ex.getMessage()).status(ex.getCode()).build();
+
+        return ResponseEntity.status(ex.getCode()).body(responseBody);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Response<HttpMessageNotReadableException>> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex) {
+        String message = ex.getMessage().split(":")[0];
+
+        Response<HttpMessageNotReadableException> responseBody = new ResponseBuilder<HttpMessageNotReadableException>()
+                .result("empty payload, check the docs!").error(400, message).status(400).build();
+
+        return ResponseEntity.status(400).body(responseBody);
     }
 }
