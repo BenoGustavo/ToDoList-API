@@ -2,6 +2,7 @@ package dev.gustavo.ToDoListAPI.utils.JWT;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import dev.gustavo.ToDoListAPI.models.UserModel;
+import dev.gustavo.ToDoListAPI.utils.error.custom.Unauthorized401Exception;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -91,7 +93,7 @@ public class JwtUtil {
      * @param token the JWT token
      * @return the username extracted from the token
      */
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
@@ -118,6 +120,16 @@ public class JwtUtil {
         return extractClaims(token).getExpiration().before(new Date());
     }
 
+    public UUID getCurrentUserId() throws Unauthorized401Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserModel) {
+            return ((UserModel) authentication.getPrincipal()).getId();
+        }
+
+        throw new Unauthorized401Exception("User is not authenticated");
+    }
+
     /**
      * Validates the given JWT token against the provided username.
      *
@@ -126,6 +138,6 @@ public class JwtUtil {
      * @return true if the token is valid and not expired, false otherwise
      */
     public boolean validateToken(String token, String username) {
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+        return (username.equals(extractEmail(token)) && !isTokenExpired(token));
     }
 }
