@@ -67,8 +67,6 @@ public class UserController {
     public ResponseEntity<Response<UserDTO>> getById(@PathVariable("id") UUID id, HttpServletRequest request) {
         ResponseBuilder<UserDTO> responseBuilder = new ResponseBuilder<>();
 
-        System.out.println("\n\n" + id.toString() + "\n\n");
-
         responseBuilder.data(userService.getUserById(id, request)).status(200)
                 .result("User retrieved from database successfully");
 
