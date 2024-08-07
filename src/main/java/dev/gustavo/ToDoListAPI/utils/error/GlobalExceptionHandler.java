@@ -5,9 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartException;
 
 import dev.gustavo.ToDoListAPI.utils.error.custom.BadRequest400Exception;
 import dev.gustavo.ToDoListAPI.utils.error.custom.DtoConvertionHandler;
@@ -85,6 +87,24 @@ public class GlobalExceptionHandler {
 
         Response<HttpMessageNotReadableException> responseBody = new ResponseBuilder<HttpMessageNotReadableException>()
                 .result("empty payload, check the docs!").error(400, message).status(400).build();
+
+        return ResponseEntity.status(400).body(responseBody);
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<Response<MultipartException>> handleMultipartException(MultipartException ex) {
+        Response<MultipartException> responseBody = new ResponseBuilder<MultipartException>()
+                .result("invalid multipart request, check the docs!").error(400, ex.getMessage()).status(400).build();
+
+        return ResponseEntity.status(400).body(responseBody);
+    }
+
+    @ExceptionHandler(MissingPathVariableException.class)
+    public ResponseEntity<Response<MissingPathVariableException>> handleMissingPathVarException(
+            MissingPathVariableException ex) {
+        Response<MissingPathVariableException> responseBody = new ResponseBuilder<MissingPathVariableException>()
+                .result("Missing path variable, perhaps you forgot something on the url").error(400, ex.getMessage())
+                .status(400).build();
 
         return ResponseEntity.status(400).body(responseBody);
     }
