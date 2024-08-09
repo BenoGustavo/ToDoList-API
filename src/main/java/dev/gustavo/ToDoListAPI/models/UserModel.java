@@ -1,6 +1,5 @@
 package dev.gustavo.ToDoListAPI.models;
 
-import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +35,7 @@ public class UserModel {
     @Column(nullable = false)
     private String nickname;
     @Column(nullable = true)
-    private Blob profilePicture;
+    private byte[] profilePicture;
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)

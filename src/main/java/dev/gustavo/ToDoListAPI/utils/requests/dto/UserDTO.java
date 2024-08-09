@@ -1,6 +1,5 @@
 package dev.gustavo.ToDoListAPI.utils.requests.dto;
 
-import java.sql.Blob;
 import java.time.LocalDateTime;
 
 import lombok.Data;
@@ -17,7 +16,7 @@ public class UserDTO {
     private String confirmPassword;
     private String newPassword;
 
-    private Blob profilePicture;
+    private byte[] profilePicture;
     private String email;
     private int age;
     private LocalDateTime createdAt;
