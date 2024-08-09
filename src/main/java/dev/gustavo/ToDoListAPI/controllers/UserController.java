@@ -1,5 +1,7 @@
 package dev.gustavo.ToDoListAPI.controllers;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -13,11 +15,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import dev.gustavo.ToDoListAPI.models.UserModel;
 import dev.gustavo.ToDoListAPI.service.UserService;
 import dev.gustavo.ToDoListAPI.utils.error.custom.BadRequest400Exception;
+import dev.gustavo.ToDoListAPI.utils.error.custom.NotFound404Exception;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.UserDTO;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.converter.UserDtoConverter;
 import dev.gustavo.ToDoListAPI.utils.responses.builder.ResponseBuilder;
@@ -35,7 +40,7 @@ public class UserController {
     private UserDtoConverter userDtoConverter;
 
     @PostMapping("/")
-    public ResponseEntity<Response<UserDTO>> create(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Response<UserDTO>> create(@RequestBody UserDTO userDTO) throws IOException {
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
             throw new BadRequest400Exception("Passwords don't match");
         }
@@ -93,6 +98,28 @@ public class UserController {
                 .status(200).result("Password updated successfully");
 
         return ResponseEntity.status(200).body(responseBuilder.build());
+    }
+
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<Response<UserDTO>> update(@PathVariable UUID id, @RequestBody UserDTO userDTO,
+            HttpServletRequest request) {
+        ResponseBuilder<UserDTO> responseBuilder = new ResponseBuilder<>();
+
+        responseBuilder.data(userService.update(id, userDTO, request)).status(200).result("User updated successfully");
+
+        return ResponseEntity.ok(responseBuilder.build());
+    }
+
+    @PatchMapping("/update/profile-picture/{id}")
+    public ResponseEntity<Response<UserDTO>> updateProfilePicture(@PathVariable("id") UUID id,
+            @RequestParam("file") MultipartFile file, HttpServletRequest request)
+            throws NotFound404Exception, BadRequest400Exception, SQLException, IOException {
+        ResponseBuilder<UserDTO> responseBuilder = new ResponseBuilder<>();
+
+        responseBuilder.data(userService.updateProfilePicture(id, file, request)).status(200)
+                .result("Profile picture updated successfully");
+
+        return ResponseEntity.ok(responseBuilder.build());
     }
 
     @DeleteMapping("/delete/{id}")
