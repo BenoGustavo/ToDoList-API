@@ -75,7 +75,7 @@ public interface ITaskBundleService {
      * @param taskBundle the task bundle data transfer object
      * @return the updated task bundle data transfer object
      */
-    TaskBundleDTO update(TaskBundleDTO taskBundle);
+    TaskBundleDTO update(UUID taskbundleId, TaskBundleDTO taskBundle);
 
     /**
      * Deletes a task bundle by its unique identifier.

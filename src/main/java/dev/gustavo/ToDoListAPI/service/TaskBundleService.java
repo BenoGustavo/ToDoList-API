@@ -1,5 +1,6 @@
 package dev.gustavo.ToDoListAPI.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import dev.gustavo.ToDoListAPI.models.TaskBundleModel;
 import dev.gustavo.ToDoListAPI.models.TaskModel;
@@ -98,9 +100,49 @@ public class TaskBundleService implements ITaskBundleService {
     }
 
     @Override
-    public TaskBundleDTO update(TaskBundleDTO taskBundle) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public TaskBundleDTO update(UUID taskbundleId, TaskBundleDTO taskBundle) {
+        TaskBundleModel taskBundleModel = taskBundleRepository.findById(taskbundleId)
+                .orElseThrow(() -> new NotFound404Exception("TaskBundle not found"));
+
+        UUID currentUserId = getCurrentUserId();
+        boolean IsUserOwner = taskBundleModel.getUser().getId().equals(currentUserId);
+
+        if (!IsUserOwner) {
+            throw new Unauthorized401Exception("User is not the owner of this task bundle");
+        }
+
+        validateTaskBundle(taskBundle);
+
+        TaskBundleModel updatedTaskBundle = updateChangedValuesOnModel(taskBundleModel, taskBundle);
+
+        taskBundleRepository.save(updatedTaskBundle);
+
+        return taskBundle;
+    }
+
+    public TaskBundleDTO updateIcon(UUID taskBundleId, MultipartFile newIcon) throws IOException {
+
+        if (newIcon == null) {
+            throw new BadRequest400Exception("Icon is required");
+        }
+
+        TaskBundleModel taskBundle = taskBundleRepository.findById(taskBundleId)
+                .orElseThrow(() -> new NotFound404Exception("TaskBundle not found"));
+
+        UUID currentUserId = getCurrentUserId();
+        boolean IsUserOwner = taskBundle.getUser().getId().equals(currentUserId);
+
+        if (!IsUserOwner) {
+            throw new Unauthorized401Exception("User is not the owner of this task bundle");
+        }
+
+        byte[] newIconBytes = newIcon.getBytes();
+
+        taskBundle.setIcon(newIconBytes);
+
+        taskBundleRepository.save(taskBundle);
+
+        return taskBundleDtoConverter.convertToDTO(taskBundle);
     }
 
     @Override
@@ -151,11 +193,24 @@ public class TaskBundleService implements ITaskBundleService {
         }
     }
 
+    private TaskBundleModel updateChangedValuesOnModel(TaskBundleModel taskBundle, TaskBundleDTO taskBundleDto) {
+        if (taskBundleDto.getTitle() != null) {
+            taskBundle.setTitle(taskBundleDto.getTitle());
+        }
+
+        if (taskBundleDto.getDescription() != null) {
+            taskBundle.setDescription(taskBundleDto.getDescription());
+        }
+
+        return taskBundle;
+    }
+
     private UUID getCurrentUserId() throws Unauthorized401Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserModel) {
-            return ((UserModel) authentication.getPrincipal()).getId();
+        if (authentication != null && authentication.getPrincipal() != null) {
+            UserModel user = userRepository.findByEmail(authentication.getName());
+            return user.getId();
         }
 
         throw new Unauthorized401Exception("User is not authenticated");
