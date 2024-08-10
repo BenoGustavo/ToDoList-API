@@ -1,6 +1,5 @@
 package dev.gustavo.ToDoListAPI.models;
 
-import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class TaskBundleModel {
     private String description;
 
     @Column(nullable = true)
-    private Blob icon;
+    private byte[] icon;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
