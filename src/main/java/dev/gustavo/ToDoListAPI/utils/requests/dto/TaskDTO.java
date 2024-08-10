@@ -1,6 +1,5 @@
 package dev.gustavo.ToDoListAPI.utils.requests.dto;
 
-import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,7 +10,7 @@ public class TaskDTO {
     private String id;
     private String title;
     private String description;
-    private Blob icon;
+    private byte[] icon;
     private LocalDateTime deadline;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
