@@ -1,15 +1,10 @@
 package dev.gustavo.ToDoListAPI.service;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
-import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -78,7 +73,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserDTO create(UserModel user) throws IOException {
+    public UserDTO create(UserModel user) {
         // Validate user model
         isUserModelValid(user);
 
@@ -89,9 +84,6 @@ public class UserService implements IUserService {
         // Hash password
         String hashedPassword = BCrypt.hashpw(user.getHashedPassword(), BCrypt.gensalt());
         user.setHashedPassword(hashedPassword);
-
-        // Set default picture
-        user.setProfilePicture(getDefaultPicture());
 
         // Save on database
         userRepository.save(user);
@@ -312,15 +304,4 @@ public class UserService implements IUserService {
             throw new Unauthorized401Exception("Authorization token is missing");
         }
     }
-
-    public byte[] getDefaultPicture() throws IOException {
-        File imageFile = new File("src/main/resources/static/icon/image.png");
-        // Read the image
-        BufferedImage image = ImageIO.read(imageFile);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
-        return baos.toByteArray();
-    }
-
 }
