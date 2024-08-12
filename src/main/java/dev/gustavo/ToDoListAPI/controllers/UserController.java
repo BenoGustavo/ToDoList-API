@@ -79,10 +79,10 @@ public class UserController {
     }
 
     @GetMapping("/email")
-    public ResponseEntity<Response<UserDTO>> getByEmail(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+    public ResponseEntity<Response<UserDTO>> getByEmail(@RequestParam String email, HttpServletRequest request) {
         ResponseBuilder<UserDTO> responseBuilder = new ResponseBuilder<>();
 
-        responseBuilder.data(userService.getUserByEmail(userDTO.getEmail(), request)).status(200)
+        responseBuilder.data(userService.getUserByEmail(email, request)).status(200)
                 .result("User retrieved from database successfully");
 
         return ResponseEntity.ok(responseBuilder.build());
@@ -110,7 +110,7 @@ public class UserController {
         return ResponseEntity.ok(responseBuilder.build());
     }
 
-    @PatchMapping("/update/profile-picture/{id}")
+    @PatchMapping(path = "/update/profile-picture/{id}", consumes = { "multipart/form-data" })
     public ResponseEntity<Response<UserDTO>> updateProfilePicture(@PathVariable("id") UUID id,
             @RequestParam("file") MultipartFile file, HttpServletRequest request)
             throws NotFound404Exception, BadRequest400Exception, SQLException, IOException {
