@@ -22,9 +22,13 @@ import dev.gustavo.ToDoListAPI.service.CustomUserDetailsService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+        private static final String[] SWAGGER_WHITELIST = {
+                        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-resources"
+        };
 
         final static String[] ALLOWED_ROUTES_WITHOUT_AUTH = {
-                        "/auth/**", "/users/", "/"
+                        "/auth/**", "/users/", "/", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
+                        "/swagger-resources", "/swagger-ui.html",
         };
         final static String[] ONLY_ADMIN_ALLOWED_ROUTES = {
                         "/users/admin/**",
@@ -43,6 +47,7 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                                                .requestMatchers(SWAGGER_WHITELIST).permitAll()
                                                 .requestMatchers(ALLOWED_ROUTES_WITHOUT_AUTH).permitAll()
                                                 .requestMatchers(ONLY_ADMIN_ALLOWED_ROUTES).hasRole("ADMIN")
                                                 .requestMatchers(ONLY_COMMON_ALLOWED_ROUTES).hasRole("COMMON")
