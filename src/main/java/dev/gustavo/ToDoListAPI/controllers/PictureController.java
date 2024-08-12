@@ -29,7 +29,7 @@ public class PictureController {
     @Autowired
     PictureService pictureService;
 
-    @PostMapping("/upload")
+    @PostMapping(path = "/upload", consumes = { "multipart/form-data" })
     public ResponseEntity<Response<PictureModel>> uploadPicture(@RequestParam("file") MultipartFile file,
             HttpServletRequest request)
             throws IOException, SQLException, NoSuchAlgorithmException {

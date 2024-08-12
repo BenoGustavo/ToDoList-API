@@ -79,8 +79,6 @@ public class PictureService {
         UserModel owner = userRepository.findById(id)
                 .orElseThrow(() -> new NotFound404Exception("Invalid id, user doesn't exist"));
 
-        System.out.println("Got some infos like owner " + owner);
-
         if (!requestUser.equals(owner)) {
             throw new Unauthorized401Exception("You aren't the owner of this picture");
         }
