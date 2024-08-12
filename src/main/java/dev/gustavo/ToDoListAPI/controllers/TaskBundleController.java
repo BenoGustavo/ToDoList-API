@@ -81,7 +81,7 @@ public class TaskBundleController {
         return ResponseEntity.ok(responseBuilder.build());
     }
 
-    @PatchMapping("/update/icon/{id}")
+    @PatchMapping(path = "/update/icon/{id}", consumes = { "multipart/form-data" })
     public ResponseEntity<Response<TaskBundleDTO>> updateIcon(@PathVariable("id") UUID id,
             @RequestParam("file") MultipartFile newIcon) throws IOException {
         ResponseBuilder<TaskBundleDTO> responseBuilder = new ResponseBuilder<>();
