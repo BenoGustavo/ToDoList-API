@@ -10,6 +10,11 @@ public class Root {
 
     @GetMapping
     public String root() {
-        return "<h1 style='width:100%; text-align:center; margin-top:48vh;'>Welcome to the ToDoListAPI</h1>";
+        return "<p>Welcome to the TODO-LIST API, see the docs in <a href='http://localhost:8080/swagger-ui/index.html'>/api-docs</p>";
+    }
+
+    @GetMapping("/api-docs")
+    public String redirectToSwagger() {
+        return "redirect:http://localhost:8080/swagger-ui/index.html";
     }
 }
