@@ -31,6 +31,12 @@ public class AuthController {
         UserDetails userDetails = authService.auth(authenticationRequest);
         final String jwt = jwtUtil.generateToken(userDetails);
 
+        boolean isUserDeleted = userRepository.findByEmail(authenticationRequest.getEmail()).getDeletedAt() != null;
+
+        if (isUserDeleted) {
+            return ResponseEntity.status(401).body("{\"Error\": \"User is deleted\"}");
+        }
+
         userRepository.updateLastLogin(authenticationRequest.getEmail());
 
         return ResponseEntity.ok(new AuthResponse(jwt));
