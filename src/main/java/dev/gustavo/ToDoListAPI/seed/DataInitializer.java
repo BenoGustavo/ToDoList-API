@@ -86,7 +86,7 @@ public class DataInitializer {
         adminUser.setEmail(adminEmail);
         adminUser.setHashedPassword(hashedPassword);
 
-        System.out.println(adminUser);
+        System.out.println("\n\nAdmin user generated: \n" + adminUser + "\n\n");
         userRepository.save(adminUser);
     }
 }
