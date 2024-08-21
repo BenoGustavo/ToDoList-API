@@ -88,8 +88,10 @@ public class UserService implements IUserService {
         // Save on database
         userRepository.save(user);
 
+        UserModel savedUser = userRepository.findByEmail(user.getEmail());
+
         // Convert Model to DTO
-        UserDTO userDto = userDtoConverter.convertToDTO(user);
+        UserDTO userDto = userDtoConverter.convertToDTO(savedUser);
 
         return userDto;
     }
@@ -196,6 +198,16 @@ public class UserService implements IUserService {
 
         String currentPassword = userRepository.findByEmail(email).getHashedPassword();
 
+        if (currentPassword == null) {
+            throw new NotFound404Exception("User not found");
+        }
+        if (newPassword == null || newPassword.isEmpty()) {
+            throw new BadRequest400Exception("Invalid new password");
+        }
+        if (oldPassword == null || oldPassword.isEmpty()) {
+            throw new BadRequest400Exception("Invalid old password");
+        }
+
         if (!BCrypt.checkpw(oldPassword, currentPassword)) {
             throw new BadRequest400Exception("Passwords don't match");
         }
@@ -253,7 +265,6 @@ public class UserService implements IUserService {
         }
 
         if (!isPasswordValid(user.getHashedPassword())) {
-            System.out.println(user.getHashedPassword());
             throw new BadRequest400Exception("Invalid password");
         }
 
