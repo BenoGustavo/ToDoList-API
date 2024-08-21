@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 import dev.gustavo.ToDoListAPI.models.TaskBundleModel;
 import dev.gustavo.ToDoListAPI.models.TaskModel;
@@ -20,6 +21,7 @@ import dev.gustavo.ToDoListAPI.utils.error.custom.Unauthorized401Exception;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.TaskDTO;
 import dev.gustavo.ToDoListAPI.utils.requests.dto.converter.TaskDtoConverter;
 
+@Service
 public class TaskService implements ITaskService {
 
     @Autowired
@@ -88,6 +90,10 @@ public class TaskService implements ITaskService {
 
     @Override
     public TaskDTO create(TaskDTO task, UUID taskBundleId) {
+        if (taskBundleId == null) {
+            throw new BadRequest400Exception("Task bundle id is required");
+        }
+
         UUID currrentUserId = getCurrentUserId();
 
         // Getting the owner and the task bundle
@@ -115,9 +121,25 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public TaskDTO update(TaskDTO task) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public TaskDTO update(TaskDTO task, UUID taskId) {
+        TaskModel taskModel = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFound404Exception("Task not found"));
+
+        verifyOwnership(taskModel);
+
+        // Updating the changed fields
+        taskModel = updateChangedFields(taskModel);
+
+        // Validating the task
+        isTaskModelValid(taskModel);
+
+        // Saving on the database
+        taskRepository.save(taskModel);
+
+        // Converting to DTO then returning
+        TaskDTO taskDto = taskDtoConverter.convertToDTO(taskModel);
+
+        return taskDto;
     }
 
     @Override
@@ -145,11 +167,29 @@ public class TaskService implements ITaskService {
         return true;
     }
 
+    private TaskModel updateChangedFields(TaskModel taskModel) {
+        if (taskModel.getTitle() != null) {
+            taskModel.setTitle(taskModel.getTitle());
+        }
+
+        if (taskModel.getDescription() != null) {
+            taskModel.setDescription(taskModel.getDescription());
+        }
+
+        if (taskModel.getDeadline() != null) {
+            taskModel.setDeadline(taskModel.getDeadline());
+        }
+
+        return taskModel;
+
+    }
+
     private UUID getCurrentUserId() throws Unauthorized401Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserModel) {
-            return ((UserModel) authentication.getPrincipal()).getId();
+        if (authentication != null && authentication.getPrincipal() != null) {
+            UserModel user = userRepository.findByEmail(authentication.getName());
+            return user.getId();
         }
 
         throw new Unauthorized401Exception("User is not authenticated");
