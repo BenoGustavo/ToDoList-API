@@ -1,107 +1,110 @@
 package dev.gustavo.ToDoListAPI.controllers;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import dev.gustavo.ToDoListAPI.service.TaskService;
+import dev.gustavo.ToDoListAPI.utils.requests.dto.TaskDTO;
+import dev.gustavo.ToDoListAPI.utils.responses.builder.ResponseBuilder;
+import dev.gustavo.ToDoListAPI.utils.responses.generic.Response;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
-    // @Autowired
-    // private ITaskRepository TaskRepository;
+    @Autowired
+    private TaskService taskService;
 
-    // @Autowired
-    // private ITaskBundleRepository TaskBundleRepository;
+    // Getters
+    @GetMapping("/{id}")
+    public ResponseEntity<Response<TaskDTO>> getTaskById(@PathVariable UUID id) {
+        ResponseBuilder<TaskDTO> responseBuilder = new ResponseBuilder<>();
 
-    // @Autowired
-    // private IUserRepository UserRepository;
+        TaskDTO task = taskService.getTaskById(id);
+        responseBuilder.data(task);
+        responseBuilder.status(200);
+        responseBuilder.result("Task retrieved successfully");
 
-    // @Autowired
-    // private JwtUtil jwtUtil;
+        return ResponseEntity.ok(responseBuilder.build());
+    }
 
-    // @GetMapping("/all")
-    // public ResponseEntity<Object> getAll() {
-    // // Perform ownership check if needed
-    // return ResponseEntity.ok(this.TaskRepository.findAll());
-    // }
+    @GetMapping("/admin/all")
+    public ResponseEntity<Response<List<TaskDTO>>> getAllTasks() {
+        ResponseBuilder<List<TaskDTO>> responseBuilder = new ResponseBuilder<>();
 
-    // @GetMapping("/by-task-bundle-id/{taskBundleId}")
-    // public ResponseEntity<Object> getByTaskBundleId(@PathVariable UUID
-    // taskBundleId,
-    // @RequestHeader("Authorization") String headerValue) {
+        List<TaskDTO> task = taskService.getAllTasks();
+        responseBuilder.data(task);
+        responseBuilder.status(200);
+        responseBuilder.result("Task retrieved successfully");
 
-    // Optional<TaskBundleModel> taskBundle =
-    // this.TaskBundleRepository.findById(taskBundleId);
+        return ResponseEntity.ok(responseBuilder.build());
+    }
 
-    // if (!taskBundle.isPresent()) {
-    // return ResponseEntity.status(404).body("Task bundle not found");
-    // }
+    @GetMapping("/allbytaskbundleid/{taskBundleId}")
+    public ResponseEntity<Response<List<TaskDTO>>> getAllTasksByTaskBundleId(@PathVariable UUID taskBundleId) {
+        ResponseBuilder<List<TaskDTO>> responseBuilder = new ResponseBuilder<>();
 
-    // if (this.isUserOwner(taskBundle.get(), headerValue)) {
-    // return ResponseEntity.status(403).body("Forbidden, you are not the owner of
-    // this task bundle");
-    // }
+        List<TaskDTO> task = taskService.getAllTasksByTaskBundleId(taskBundleId);
+        responseBuilder.data(task);
+        responseBuilder.status(200);
+        responseBuilder.result("Tasks retrieved successfully");
 
-    // return
-    // ResponseEntity.ok(this.TaskRepository.findByTaskBundleId(taskBundleId));
-    // }
+        return ResponseEntity.ok(responseBuilder.build());
+    }
 
-    // @GetMapping("/by-task-id/{taskId}")
-    // public ResponseEntity<Object> getById(@PathVariable UUID taskId,
-    // @RequestHeader("Authorization") String headerValue) {
+    @GetMapping("/alltaskbyuserid/{userId}")
+    public ResponseEntity<Response<List<TaskDTO>>> getAllTasksByUserId(@PathVariable UUID userId) {
+        ResponseBuilder<List<TaskDTO>> responseBuilder = new ResponseBuilder<>();
 
-    // Optional<TaskModel> task = this.TaskRepository.findById(taskId);
+        List<TaskDTO> task = taskService.getAllTasksByUserId(userId);
+        responseBuilder.data(task);
+        responseBuilder.status(200);
+        responseBuilder.result("Tasks retrieved successfully");
 
-    // if (!task.isPresent()) {
-    // return ResponseEntity.status(404).body("Task not found");
-    // }
+        return ResponseEntity.ok(responseBuilder.build());
+    }
 
-    // if (!isUserOwner(task.get(), headerValue)) {
-    // return ResponseEntity.status(403).body("Forbidden, you are not the owner of
-    // this task");
-    // }
+    @PostMapping("/")
+    public ResponseEntity<Response<TaskDTO>> createTask(TaskDTO taskDTO) {
+        ResponseBuilder<TaskDTO> responseBuilder = new ResponseBuilder<>();
 
-    // return ResponseEntity.ok(this.TaskRepository.findById(taskId));
-    // }
+        TaskDTO task = taskService.create(taskDTO, taskDTO.getTaskBundleId());
+        responseBuilder.data(task);
+        responseBuilder.status(201);
+        responseBuilder.result("Task created successfully");
 
-    // @PostMapping("/")
-    // public TaskModel create(TaskModel taskModel) {
-    // return this.TaskRepository.save(taskModel);
-    // }
+        return ResponseEntity.ok(responseBuilder.build());
+    }
 
-    // private boolean isUserOwner(TaskModel task, String headerValue) {
-    // headerValue = headerValue.replace("Bearer ", "");
-    // String requestEmail = jwtUtil.extractUsername(headerValue);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<Response<TaskDTO>> updateTask(@PathVariable UUID id, TaskDTO taskDTO) {
+        ResponseBuilder<TaskDTO> responseBuilder = new ResponseBuilder<>();
 
-    // UUID taskBundleId = task.getTaskBundleId();
+        TaskDTO task = taskService.update(taskDTO, id);
+        responseBuilder.data(task);
+        responseBuilder.status(200);
+        responseBuilder.result("Task updated successfully");
 
-    // TaskBundleModel taskBundle = TaskBundleRepository.findById(taskBundleId)
-    // .orElseThrow(() -> new NotFound404Exception("task bundle not found"));
+        return ResponseEntity.ok(responseBuilder.build());
+    }
 
-    // if (taskBundle == null) {
-    // return false;
-    // }
+    @PatchMapping("/delete/{id}")
+    public ResponseEntity<Response<TaskDTO>> deleteTask(@PathVariable UUID id) {
+        ResponseBuilder<TaskDTO> responseBuilder = new ResponseBuilder<>();
 
-    // UUID taskBundleOwnerId = taskBundle.getUserId();
+        TaskDTO task = taskService.delete(id);
+        responseBuilder.data(task);
+        responseBuilder.status(200);
+        responseBuilder.result("Task deleted successfully");
 
-    // UserModel taskBundleOwnerModel = UserRepository.findById(taskBundleOwnerId)
-    // .orElseThrow(() -> new NotFound404Exception("user not found"));
-
-    // String ownerEmail = taskBundleOwnerModel.getEmail();
-
-    // return ownerEmail.equals(requestEmail);
-    // }
-
-    // private boolean isUserOwner(TaskBundleModel taskBundle, String headerValue) {
-    // headerValue = headerValue.replace("Bearer ", "");
-    // String requestEmail = jwtUtil.extractUsername(headerValue);
-
-    // UUID taskBundleOwnerId = taskBundle.getUserId();
-
-    // UserModel taskBundleOwnerModel = UserRepository.findById(taskBundleOwnerId)
-    // .orElseThrow(() -> new NotFound404Exception("user not found"));
-
-    // String ownerEmail = taskBundleOwnerModel.getEmail();
-
-    // return ownerEmail.equals(requestEmail);
-    // }
+        return ResponseEntity.ok(responseBuilder.build());
+    }
 }

@@ -89,11 +89,12 @@ public class UserController {
     }
 
     @PatchMapping("/update/password")
-    public ResponseEntity<Response<UserDTO>> updatePassword(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+    public ResponseEntity<Response<UserDTO>> updatePassword(@RequestParam String email, @RequestBody UserDTO userDTO,
+            HttpServletRequest request) {
         ResponseBuilder<UserDTO> responseBuilder = new ResponseBuilder<>();
 
         responseBuilder
-                .data(userService.updatePassword(userDTO.getEmail(), userDTO.getNewPassword(),
+                .data(userService.updatePassword(email, userDTO.getNewPassword(),
                         userDTO.getOldPassword(), request))
                 .status(200).result("Password updated successfully");
 
@@ -127,7 +128,6 @@ public class UserController {
         ResponseBuilder<UserDTO> responseBuilder = new ResponseBuilder<>();
 
         responseBuilder.data(userService.delete(id, request)).status(200).result("User deleted successfully");
-
         return ResponseEntity.ok(responseBuilder.build());
     }
 }
