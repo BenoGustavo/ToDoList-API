@@ -31,7 +31,7 @@ public class SecurityConfig {
                         "/swagger-resources", "/swagger-ui.html",
         };
         final static String[] ONLY_ADMIN_ALLOWED_ROUTES = {
-                        "/users/admin/**",
+                        "/users/admin/**", "/taskbundles/admin/**", "/tasks/admin/**"
         };
         final static String[] ONLY_COMMON_ALLOWED_ROUTES = {
                         "/common/**",
