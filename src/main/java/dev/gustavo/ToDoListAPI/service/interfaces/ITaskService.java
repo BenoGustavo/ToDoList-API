@@ -70,7 +70,7 @@ public interface ITaskService {
      * @param task the task data transfer object
      * @return the updated task data transfer object
      */
-    TaskDTO update(TaskDTO task);
+    TaskDTO update(TaskDTO task, UUID taskBundleId);
 
     /**
      * Deletes a task by its unique identifier.
